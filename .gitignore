@@ -1,0 +1,20 @@
+################################################################################
+# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
+################################################################################
+
+/.vs/
+
+Api/bin/
+Api/obj/
+
+Tool/bin/
+Tool/obj/
+
+AndesService/bin/
+AndesService/obj/
+AndesService/obj/Debug/
+
+Entity/bin/
+Entity/obj/
+
+/packages

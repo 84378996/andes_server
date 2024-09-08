@@ -73,7 +73,7 @@ namespace MCSService.Global
         {
             UserInfo user = Get(id);
             if (user != null)
-                return user.UserName;
+                return user.Name;
             return "";
         }
 
@@ -94,24 +94,7 @@ namespace MCSService.Global
             return null;
         }
 
-        public UserInfo GetByDevUser(string devuser)
-        {
-            if (string.IsNullOrWhiteSpace(devuser))
-                return null;
-
-            lock (_lock_datas)
-            {
-                foreach (UserInfo user in Datas)
-                {
-                    if (user.DevUser == devuser)
-                    {
-                        return user;
-                    }
-                }
-            }
-
-            return null;
-        }
+        
 
 
         /// <summary>
@@ -121,22 +104,22 @@ namespace MCSService.Global
         public bool HasPurview(long? operid, string key)
         {
             return true;
-            if ((operid > 0) == false)
-                return false;
+            //if ((operid > 0) == false)
+            //    return false;
 
-            foreach (UserInfo user in Datas)
-            {
-                if (operid == user.ID)
-                {
-                    if (user.RoleID > 0)
-                    {
-                        return RoleGlobal.Instance.HasPurview(user.RoleID, key);
-                    }
-                    break;
-                }
-            }
+            //foreach (UserInfo user in Datas)
+            //{
+            //    if (operid == user.ID)
+            //    {
+            //        if (user.RoleID > 0)
+            //        {
+            //            return RoleGlobal.Instance.HasPurview(user.RoleID, key);
+            //        }
+            //        break;
+            //    }
+            //}
 
-            return false;
+            //return false;
 
         }
     }

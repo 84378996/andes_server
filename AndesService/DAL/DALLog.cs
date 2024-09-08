@@ -16,51 +16,51 @@ namespace MCSService.DAL
 
         public void Add(Log log)
         {
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
-                HelperDBEntity.InsertEntity(con, log);
-                con.Close();
-            }
+            //using (SqlConnection con = new SqlConnection(DataConnString))
+            //{
+            //    con.Open();
+            //    HelperDBEntity.InsertEntity(con, log);
+            //    con.Close();
+            //}
         }
 
         public void Add(List<Log> list)
         {
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
+            //using (SqlConnection con = new SqlConnection(DataConnString))
+            //{
+            //    con.Open();
 
-                //自动生成工单
-                SqlCommand sql = new SqlCommand("select Top(1) * from [Log]", con);
-                DataTable dt = new DataTable();
-                SqlDataAdapter adapter = new SqlDataAdapter(sql);
-                adapter.Fill(dt);
-                dt.Rows.Clear();
+            //    //自动生成工单
+            //    SqlCommand sql = new SqlCommand("select Top(1) * from [Log]", con);
+            //    DataTable dt = new DataTable();
+            //    SqlDataAdapter adapter = new SqlDataAdapter(sql);
+            //    adapter.Fill(dt);
+            //    dt.Rows.Clear();
 
-                DataRow dr;
-                foreach (Log data in list)
-                {
-                    dr = dt.NewRow();
-                    dr["Type"] = data.Type;
-                    dr["Module"] = data.Module;
-                    dr["Identifier"] = data.Identifier;
-                    dr["Title"] = data.Title;
-                    dr["OperID"] = data.OperID;
-                    dr["AddTime"] = DateTime.Now;
-                    dr["Remark"] = data.Remark;
-                    dr["Param1"] = data.Param1;
-                    dr["Param2"] = data.Param2;
+            //    DataRow dr;
+            //    foreach (Log data in list)
+            //    {
+            //        dr = dt.NewRow();
+            //        dr["Type"] = data.Type;
+            //        dr["Module"] = data.Module;
+            //        dr["Identifier"] = data.Identifier;
+            //        dr["Title"] = data.Title;
+            //        dr["OperID"] = data.OperID;
+            //        dr["AddTime"] = DateTime.Now;
+            //        dr["Remark"] = data.Remark;
+            //        dr["Param1"] = data.Param1;
+            //        dr["Param2"] = data.Param2;
 
 
-                    dt.Rows.Add(dr);
-                }
+            //        dt.Rows.Add(dr);
+            //    }
 
-                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(con))
-                {
-                    bulkCopy.DestinationTableName = "[dbo].[Log]";
-                    bulkCopy.WriteToServer(dt);
-                }
-            }
+            //    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(con))
+            //    {
+            //        bulkCopy.DestinationTableName = "[dbo].[Log]";
+            //        bulkCopy.WriteToServer(dt);
+            //    }
+            //}
         }
 
         public string QuerySql(JObject param, bool matchExact)
@@ -135,16 +135,17 @@ namespace MCSService.DAL
 
         public List<Log> GetAll(JObject param, bool match)
         {
-            string condition = QuerySql(param, match);
+            //string condition = QuerySql(param, match);
 
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
+            //using (SqlConnection con = new SqlConnection(DataConnString))
+            //{
+            //    con.Open();
 
-                string sql = string.Format("select * from [Log] where {0} order by ID desc", condition);
-                List<Log> list = HelperDBEntity.GetObjectList<Log>(con, sql);
-                return list;
-            }
+            //    string sql = string.Format("select * from [Log] where {0} order by ID desc", condition);
+            //    List<Log> list = HelperDBEntity.GetObjectList<Log>(con, sql);
+            //    return list;
+            //}
+            return new List<Log>();
         }
 
         public Log Get(long? id)

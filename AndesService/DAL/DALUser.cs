@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tool;
+using DB;
 
 namespace MCSService.DAL
 {
@@ -16,17 +17,7 @@ namespace MCSService.DAL
         public List<UserInfo> GetAll()
         {
             List<UserInfo> list = new List<UserInfo>();
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
-
-                string sql = "select [ID],[LoginName] ,[UserName],[RoleID],[Enabled] from [UserInfo]";
-
-                list = HelperDBEntity.GetObjectList<UserInfo>(con, sql);
-
-                con.Close();
-            }
-
+            list.AddRange(EntityHelp.GetObjectList<UserInfo>());
             return list;
         }
 
@@ -56,22 +47,9 @@ namespace MCSService.DAL
 
         public UserInfo Get(JObject param)
         {
-
             string condition = QuerySql(param, true);
-
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
-
-                string sql = string.Format("select  top(1) * from [UserInfo] where {0} ", condition);
-
-                UserInfo entity = HelperDBEntity.GetObject<UserInfo>(con, sql);
-
-                if (entity.ID > 0)
-                {
-                    return entity;
-                }
-            }
+            var u = EntityHelp.GetObject<UserInfo>($"select * from \"public\".\"User\" where {condition} limit 1");
+            if (u.ID > 0) return u;
             return null;
         }
 
@@ -80,7 +58,7 @@ namespace MCSService.DAL
             StringBuilder sb = new StringBuilder();
 
             if (param.ContainsKey("UserName"))
-                sb.AppendFormat("[UserName]='{0}',", param["UserName"].ToString());
+                sb.AppendFormat("Name='{0}',", param["UserName"].ToString());
 
             if (param.ContainsKey("Phone"))
                 sb.AppendFormat("[Phone]='{0}',", param["Phone"].ToString());
@@ -180,13 +158,13 @@ namespace MCSService.DAL
             string condition;
             if (HelperJObject.IsPositiveLong(param, "ID"))
             {
-                condition = string.Format("[ID]={0} ", param["ID"].ToString());
+                condition = string.Format("\"ID\"={0} ", param["ID"].ToString());
                 return condition;
             }
 
             if (matchExact && HelperJObject.IsString(param, "LoginName"))
             {
-                condition = string.Format("[LoginName]='{0}' ", param["LoginName"].ToString());
+                condition = string.Format("\"LoginName\"='{0}' ", param["LoginName"].ToString());
                 return condition;
             }
 
@@ -205,17 +183,17 @@ namespace MCSService.DAL
             if (HelperJObject.IsString(param, "UserName"))
             {
                 if (matchExact)
-                    sb.AppendFormat("[UserName]='{0}' AND ", param["UserName"].ToString());
+                    sb.AppendFormat("\"Name\"='{0}' AND ", param["UserName"].ToString());
                 else
-                    sb.AppendFormat("[UserName] like '%{0}%' AND ", param["UserName"].ToString());
+                    sb.AppendFormat("\"Name\" like '%{0}%' AND ", param["UserName"].ToString());
             }
 
-            if (HelperJObject.IsInt(param, "Enabled"))
-                sb.AppendFormat("[Enabled]={0} AND ", param["Enabled"].ToString());
+            //if (HelperJObject.IsInt(param, "Enabled"))
+            //    sb.AppendFormat("[Enabled]={0} AND ", param["Enabled"].ToString());
 
             condition = sb.ToString();
             if (string.IsNullOrWhiteSpace(condition))
-                condition = string.Format(" [ID]>=0 AND ");
+                condition = string.Format(" \"ID\">=0 AND ");
 
             condition = condition.Substring(0, condition.Length - 4);
             return condition;

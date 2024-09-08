@@ -28,20 +28,20 @@ namespace MCSService.Api.BLL
 
         private void DealWithData(UserInfo data, bool detailed = false)
         {
-            data.RoleName = RoleGlobal.Instance.GetRoleName(data.RoleID);
+            //data.RoleName = RoleGlobal.Instance.GetRoleName(data.RoleID);
             data.AvatarHttp = "/api/avatar/" + data.AvatarName;
             //data.Menus = RoleGlobal.Instance.GetMenus(data.RoleID);
 
-            if (detailed)
-            { 
+            //if (detailed)
+            //{
 
-            }
-            else
-            {
-                data.Pwd = null;
-            }
-            
-   
+            //}
+            //else
+            //{
+            //    data.Pwd = null;
+            //}
+
+
         }
 
         public bool Verify(string loginname, string password)
@@ -53,13 +53,13 @@ namespace MCSService.Api.BLL
                 if (userinfo == null)
                     return false;
 
-                if (userinfo.Enabled != 1)
-                    return false;
+                //if (userinfo.Enabled != 1)
+                //    return false;
 
-                string pwd = HelperSecurity.SHAEncrypt(password);
-                string pwdmid = HelperSecurity.DecryptPwd(userinfo.LoginName, userinfo.Pwd);
-                if (pwd != pwdmid)
-                    return false;
+                //string pwd = HelperSecurity.SHAEncrypt(password);
+                //string pwdmid = HelperSecurity.DecryptPwd(userinfo.LoginName, userinfo.Pwd);
+                //if (pwd != pwdmid)
+                //    return false;
 
                 return true;
 
@@ -104,7 +104,8 @@ namespace MCSService.Api.BLL
                 UserHostAddress = clientIpAddress,
             };
 
-    
+
+            //验证码功能
             string code = ImageCodeGlobal.GetInstance().Get(req.Data["CodeID"].ToString());
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -144,32 +145,32 @@ namespace MCSService.Api.BLL
                 return rsp;
             }
 
-            if (userinfo.Enabled != 1)
-            {
-                rsp.Code = ErrorCode.Parameter;
-                rsp.Msg = "帐号异常,没有登录权限";
-                log.Status = (int)LogStatus.Fail;
-                log.Remark += "帐号异常,没有登录权限";
-                _logDal.Add(log);
-                return rsp;
-            }
+            //if (userinfo.Enabled != 1)
+            //{
+            //    rsp.Code = ErrorCode.Parameter;
+            //    rsp.Msg = "帐号异常,没有登录权限";
+            //    log.Status = (int)LogStatus.Fail;
+            //    log.Remark += "帐号异常,没有登录权限";
+            //    _logDal.Add(log);
+            //    return rsp;
+            //}
 
             
-                string pwd = HelperSecurity.SHAEncrypt(req.Data["Pwd"].ToString());
-                string pwdmid = HelperSecurity.DecryptPwd(userinfo.LoginName, userinfo.Pwd);
+            //    string pwd = HelperSecurity.SHAEncrypt(req.Data["Pwd"].ToString());
+            //    string pwdmid = HelperSecurity.DecryptPwd(userinfo.LoginName, userinfo.Pwd);
 
 
-            if (pwd != pwdmid)
-            {
+            //if (pwd != pwdmid)
+            //{
 
-                rsp.Code = ErrorCode.Parameter;
-                rsp.Msg = "登录名或密码错误";
-                log.Status = (int)LogStatus.Fail;
-                log.Remark += "登录名或密码错误";
-                _logDal.Add(log);
-                return rsp;
+            //    rsp.Code = ErrorCode.Parameter;
+            //    rsp.Msg = "登录名或密码错误";
+            //    log.Status = (int)LogStatus.Fail;
+            //    log.Remark += "登录名或密码错误";
+            //    _logDal.Add(log);
+            //    return rsp;
 
-            }
+            //}
 
 
             DealWithData(userinfo);
@@ -219,10 +220,10 @@ namespace MCSService.Api.BLL
                 data.Add("AvatarName", filename);
                 _dal.Modify(data);
 
-                //删除原始文件
-                string oldpath = folder + "\\" + user.AvatarName;
-                if (File.Exists(oldpath))
-                    File.Delete(oldpath);
+                ////删除原始文件
+                //string oldpath = folder + "\\" + user.AvatarName;
+                //if (File.Exists(oldpath))
+                //    File.Delete(oldpath);
                 UserGlobal.Instance.Refresh();
 
                 rsp.StatusCode = HttpStatusCode.OK;
@@ -411,7 +412,7 @@ namespace MCSService.Api.BLL
                     if (string.IsNullOrWhiteSpace(oldpwd) == false)
                         oldpwd = HelperSecurity.EncryptPwd(user.LoginName, oldpwd);
 
-                    if (oldpwd != user.Pwd)
+                    if (oldpwd != user.Password)
                     {
                         rsp.Code = ErrorCode.Parameter;
                         rsp.Msg = "密码错误";
@@ -420,7 +421,7 @@ namespace MCSService.Api.BLL
                 }
 
                 string pwd = req.Data["Pwd"].ToString();
-                pwd = HelperSecurity.EncryptPwd(user.LoginName,pwd);
+                pwd = HelperSecurity.EncryptPwd(user.LoginName, pwd);
 
                 JObject obj = new JObject();
                 obj.Add("ID", user.ID);
@@ -434,7 +435,7 @@ namespace MCSService.Api.BLL
                     Title = "修改密码",
                     OperID = req.OperID,
                     Identifier = user.ID.ToString(),
-                    Remark = string.Format("修改帐户密码：{0},{1}", user.LoginName, user.UserName),
+                    Remark = string.Format("修改帐户密码：{0},{1}", user.LoginName, user.Name),
                 });
 
             }
@@ -551,19 +552,19 @@ namespace MCSService.Api.BLL
 
             UserInfo data = JsonConvert.DeserializeObject<UserInfo>(req.Data.ToString());
 
-            if (string.IsNullOrWhiteSpace(data.UserName))
+            if (string.IsNullOrWhiteSpace(data.LoginName))
             {
                 rsp.Code = ErrorCode.Parameter;
                 rsp.Msg = "登录名错误";
                 return rsp;
             }
-            data.AddTime = DateTime.Now;
-            data.RoleName = null;
+            data.CreateTime = DateTime.Now;
+            //data.RoleName = null;
             data.AvatarName = null;
             data.AvatarHttp = null;
-            
-            string pwd = HelperSecurity.SHAEncrypt(data.Pwd);
-            data.Pwd = HelperSecurity.EncryptPwd(data.LoginName, pwd);
+
+            string pwd = HelperSecurity.SHAEncrypt(data.Password);
+            data.Password = HelperSecurity.EncryptPwd(data.LoginName, pwd);
 
     
             _dal.Add(data);
@@ -619,7 +620,7 @@ namespace MCSService.Api.BLL
                     OperID = req.OperID,
                     Identifier = user.ID.ToString(),
                     Param1 = JsonConvert.SerializeObject(user, Formatting.Indented, JsonSettings.settings),
-                    Remark = string.Format("{0},{1}", user.LoginName, user.UserName),
+                    Remark = string.Format("{0},{1}", user.LoginName, user.Name),
                 });
 
                 return rsp;
@@ -653,7 +654,7 @@ namespace MCSService.Api.BLL
                         OperID = req.OperID,
                         Identifier = user.ID.ToString(),
                         Param1 = JsonConvert.SerializeObject(user, Formatting.Indented, JsonSettings.settings),
-                        Remark = string.Format("{0},{1}", user.LoginName, user.UserName),
+                        Remark = string.Format("{0},{1}", user.LoginName, user.Name),
                     });
 
                 }
@@ -706,197 +707,197 @@ namespace MCSService.Api.BLL
 
         public string BuildReport(List<UserInfo> list, string title)
         {
+            return string.Empty;
+            //HSSFWorkbook workbook = new HSSFWorkbook();
+            //ISheet sheet = workbook.CreateSheet(DateTime.Now.ToString("yyyyMMddHHmmss"));
+            //HelperExcel.InitSheet(sheet);
 
-            HSSFWorkbook workbook = new HSSFWorkbook();
-            ISheet sheet = workbook.CreateSheet(DateTime.Now.ToString("yyyyMMddHHmmss"));
-            HelperExcel.InitSheet(sheet);
+            //IRow row;
+            //ICell cell;
+            //int rowindex = 0;
 
-            IRow row;
-            ICell cell;
-            int rowindex = 0;
+            ////标题
+            //row = sheet.CreateRow(rowindex);
+            //int colindex = 0;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue(title);
+            //cell.CellStyle = HelperExcel.GetTitleStyle(workbook);
+            //row.HeightInPoints = 40;
+            //sheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, 9));
 
-            //标题
-            row = sheet.CreateRow(rowindex);
-            int colindex = 0;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue(title);
-            cell.CellStyle = HelperExcel.GetTitleStyle(workbook);
-            row.HeightInPoints = 40;
-            sheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, 9));
+            //ICellStyle style = HelperExcel.GetRowTitleStyle(workbook);
 
-            ICellStyle style = HelperExcel.GetRowTitleStyle(workbook);
+            //rowindex++;
+            //row = sheet.CreateRow(rowindex);
+            //row.HeightInPoints = HelperExcel.GetRowHeight();
+            //colindex = 0;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("#");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("状态");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("登录名");
+            //cell.CellStyle = style;
+            //sheet.SetColumnWidth(colindex, 30 * 150);
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("用户名");
+            //cell.CellStyle = style;
+            //sheet.SetColumnWidth(colindex, 30 * 150);
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("角色");
+            //cell.CellStyle = style;
+            //sheet.SetColumnWidth(colindex, 30 * 150);
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("工号");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("电话");
+            //cell.CellStyle = style;
+            //sheet.SetColumnWidth(colindex, 30 * 150);
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("邮箱");
+            //cell.CellStyle = style;
+            //sheet.SetColumnWidth(colindex, 30 * 150);
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("录入时间");
+            //cell.CellStyle = style;
+            //sheet.SetColumnWidth(colindex, 30 * 200);
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("说明");
+            //cell.CellStyle = style;
+            //sheet.SetColumnWidth(colindex, 30 * 200);
 
-            rowindex++;
-            row = sheet.CreateRow(rowindex);
-            row.HeightInPoints = HelperExcel.GetRowHeight();
-            colindex = 0;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("#");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("状态");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("登录名");
-            cell.CellStyle = style;
-            sheet.SetColumnWidth(colindex, 30 * 150);
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("用户名");
-            cell.CellStyle = style;
-            sheet.SetColumnWidth(colindex, 30 * 150);
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("角色");
-            cell.CellStyle = style;
-            sheet.SetColumnWidth(colindex, 30 * 150);
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("工号");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("电话");
-            cell.CellStyle = style;
-            sheet.SetColumnWidth(colindex, 30 * 150);
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("邮箱");
-            cell.CellStyle = style;
-            sheet.SetColumnWidth(colindex, 30 * 150);
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("录入时间");
-            cell.CellStyle = style;
-            sheet.SetColumnWidth(colindex, 30 * 200);
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("说明");
-            cell.CellStyle = style;
-            sheet.SetColumnWidth(colindex, 30 * 200);
+            //style = HelperExcel.GetRowStyle(workbook);
+            //int index = 0;
+            //foreach (UserInfo item in list)
+            //{
+            //    DealWithData(item);
+            //    index++;
+            //    rowindex++;
+            //    row = sheet.CreateRow(rowindex);
+            //    row.HeightInPoints = HelperExcel.GetRowHeight();
+            //    colindex = 0;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(index);
+            //    cell.CellStyle = style;
 
-            style = HelperExcel.GetRowStyle(workbook);
-            int index = 0;
-            foreach (UserInfo item in list)
-            {
-                DealWithData(item);
-                index++;
-                rowindex++;
-                row = sheet.CreateRow(rowindex);
-                row.HeightInPoints = HelperExcel.GetRowHeight();
-                colindex = 0;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(index);
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.Enabled == 1 ? "正常" : "禁用");
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.Enabled == 1 ? "正常" : "禁用");
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.LoginName);
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.LoginName);
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.UserName);
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.UserName);
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.RoleName);
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.RoleName);
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.JobNumber);
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.JobNumber);
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.Phone);
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.Phone);
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.Email);
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.Email);
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.AddTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+            //    cell.CellStyle = style;
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.AddTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-                cell.CellStyle = style;
+            //    colindex++;
+            //    cell = row.CreateCell(colindex);
+            //    cell.SetCellValue(item.Remark);
+            //    cell.CellStyle = style;
+            //}
 
-                colindex++;
-                cell = row.CreateCell(colindex);
-                cell.SetCellValue(item.Remark);
-                cell.CellStyle = style;
-            }
+            //style = HelperExcel.GetRowTotalStyle(workbook);
+            //rowindex++;
+            //row = sheet.CreateRow(rowindex);
+            //row.HeightInPoints = HelperExcel.GetRowHeight();
+            //colindex = 0;
 
-            style = HelperExcel.GetRowTotalStyle(workbook);
-            rowindex++;
-            row = sheet.CreateRow(rowindex);
-            row.HeightInPoints = HelperExcel.GetRowHeight();
-            colindex = 0;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
 
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
 
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //colindex++;
+            //cell = row.CreateCell(colindex);
+            //cell.SetCellValue("");
+            //cell.CellStyle = style;
+            //string filename = title + ".xls";
+            //string childfolder = Guid.NewGuid().ToString("N").ToUpper();
+            //string folder = AppDomain.CurrentDomain.BaseDirectory + "api\\report\\" + childfolder;
+            //if (Directory.Exists(folder) == false)
+            //    Directory.CreateDirectory(folder);
 
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            colindex++;
-            cell = row.CreateCell(colindex);
-            cell.SetCellValue("");
-            cell.CellStyle = style;
-            string filename = title + ".xls";
-            string childfolder = Guid.NewGuid().ToString("N").ToUpper();
-            string folder = AppDomain.CurrentDomain.BaseDirectory + "api\\report\\" + childfolder;
-            if (Directory.Exists(folder) == false)
-                Directory.CreateDirectory(folder);
+            //string fullname = folder + "\\" + filename;
+            //FileStream fs = File.OpenWrite(fullname);
+            //workbook.Write(fs);
+            //fs.Close();
 
-            string fullname = folder + "\\" + filename;
-            FileStream fs = File.OpenWrite(fullname);
-            workbook.Write(fs);
-            fs.Close();
-
-            //return ReportHttp + "/" + filename;
-            return "/api/report/" + childfolder + "/" + filename;
+            ////return ReportHttp + "/" + filename;
+            //return "/api/report/" + childfolder + "/" + filename;
 
         }
 

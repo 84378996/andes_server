@@ -41,7 +41,7 @@ namespace MCSService.Api.BLL
 
             CreateLoginGraphic(code, fullname);
             
-            string url = string.Format("/api/resource/imagecode/{0}",
+            string url = string.Format("/api/temp/imagecode/{0}",
                  filename);
             string key = Guid.NewGuid().ToString("N").ToUpper();
 

@@ -6,10 +6,12 @@ using System.Web.Http;
 using Tool;
 using System.Windows.Forms;
 using NPOI.SS.Formula.Functions;
+using DB;
+using System.Collections.Generic;
 
 namespace MCSService.Api.Controllers
 {
-    public class TestController : ApiController
+    public class DeviceController : ApiController
     {
         [HttpGet]
         [HttpPost]
@@ -55,51 +57,48 @@ namespace MCSService.Api.Controllers
             }
         }
 
-        
+
         [HttpPost]
         public IHttpActionResult GetDevices([FromBody] RequestObject req)
         {
             try
             {
+                
+                BLLDevice bll = new BLLDevice();
+                ResponseObject rsp = bll.GetDeviceList(req);
+                return Json(rsp, JsonSettings.settings);
+
+            }
+            catch (Exception ex)
+            {
+                HelperLog.Error(ex.StackTrace + ex.Message);
+
+                return Json(new ResponseObject
+                {
+                    Code = MsgCode.Other,
+                    Msg = ex.Message
+                }, JsonSettings.settings);
+            }
+        }
+
+
+
+
+        [HttpPost]
+        public IHttpActionResult GetDevice([FromBody] RequestObject req)
+        {
+            try
+            {
                 ResponseObject rsp = new ResponseObject();
 
-                JArray array = new JArray();
-                array.Add(new JObject
-                {
-                    { "ID", 1 },
+                // var ds = EntityHelp.GetObjectList<Device>();
 
-                {"no", "test001"                                  },
-            {"name", "test"                                   },
-            {"imei", "863121077972917"                        },
-            {"createtime", "2024-09-01 20:14:07"             },
-            {"deleted", 0                                     },
-            {"unit", 0                                        },
-            {"jd",1                                          },
-            {"thresholdmin", 200                            },
-            {"thresholdmax", 500                            },
-            {"value", 0                                       },
-            { "lastrecordtime", "2024-08-31 20:23:55"        },
-                });
-                array.Add(new JObject
-                {
-                    { "ID", 2 },
-
-                {"no", "test002"                                  },
-            {"name", "test"                                   },
-            {"imei", "863121077972918"                        },
-            {"createtime", "2024-09-01 20:14:07"             },
-            {"deleted", 0                                     },
-            {"unit", 0                                        },
-            {"jd",1                                          },
-            {"thresholdmin", 200                            },
-            {"thresholdmax", 500                            },
-            {"value", 0                                       },
-            { "lastrecordtime", "2024-08-31 20:23:55"        },
-                });
-
+                // JArray array = JArray.FromObject(ds);
+                Device device = new Device();
+                device.DeviceNo = "sdfasf";
                 JObject data = new JObject
                 {
-                    { "Data", array},
+                    { "Data", JObject.FromObject(device)},
                     { "Total", 1 },
                     { "Count",0 },
                     { "PageIndex", 1 }
@@ -121,5 +120,41 @@ namespace MCSService.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public IHttpActionResult GetDeviceRecords([FromBody] RequestObject req)
+        {
+            try
+            {
+                //ResponseObject rsp = new ResponseObject();
+
+                //var ds = EntityHelp.GetObjectList<Record>($"select * from \"public\".\"Record\" where \"DeviceID\"={1}");
+
+                //JObject data = new JObject
+                //{
+                //    { "Data", JArray.FromObject(ds)},
+                //    { "Total", 1 },
+                //    { "Count",0 },
+                //    { "PageIndex", 1 }
+                //};
+
+                //rsp.Data = data;
+                //return Json(rsp, JsonSettings.settings);
+
+                BLLDeviceRecord bll = new BLLDeviceRecord();
+                ResponseObject rsp = bll.GetDeviceRecordList(req);
+                return Json(rsp, JsonSettings.settings);
+
+            }
+            catch (Exception ex)
+            {
+                HelperLog.Error(ex.StackTrace + ex.Message);
+
+                return Json(new ResponseObject
+                {
+                    Code = MsgCode.Other,
+                    Msg = ex.Message
+                }, JsonSettings.settings);
+            }
+        }
     }
 }

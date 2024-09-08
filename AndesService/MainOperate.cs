@@ -116,12 +116,12 @@ namespace MCSService
 
                 //创建数据表
                 //当月
-                dal.CreateTable(DateTime.Now.ToString("yyyyMM"));
+                //dal.CreateTable(DateTime.Now.ToString("yyyyMM"));
                 //下月
-                dal.CreateTable(DateTime.Now.AddMonths(1).ToString("yyyyMM"));
+                //dal.CreateTable(DateTime.Now.AddMonths(1).ToString("yyyyMM"));
 
                 //删除
-                dal.DeleteTable();
+                //dal.DeleteTable();
 
                 //RefreshReport
 

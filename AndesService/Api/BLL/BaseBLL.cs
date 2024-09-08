@@ -97,7 +97,7 @@ namespace MCSService.Api.BLL
             if (req == null)
                 return false;
 
-            if (req.id == null || req.name == null || req.timestamp == null)
+            if (req.id == null || req.name == null )
                 return false;
 
             return true;

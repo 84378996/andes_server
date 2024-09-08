@@ -10,7 +10,7 @@ namespace MCSService.Global
 
         public static readonly string Temp = AppDomain.CurrentDomain.BaseDirectory + "temp";
 
-        public static readonly string ImageCode = AppDomain.CurrentDomain.BaseDirectory + "temp\\imagecode";
+        public static readonly string ImageCode = AppDomain.CurrentDomain.BaseDirectory + "api\\temp\\imagecode";
 
         public static readonly string Log = AppDomain.CurrentDomain.BaseDirectory + "\\Log";
 

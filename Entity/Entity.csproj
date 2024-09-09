@@ -111,6 +111,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Alarm.cs" />
     <Compile Include="AlarmData.cs" />
     <Compile Include="DBHelper.cs" />
     <Compile Include="DeliveryData.cs" />

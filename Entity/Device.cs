@@ -16,7 +16,7 @@ namespace Entity
         ///<summary>
         /// 主键
         ///</summary>
-        [DbField(true)]
+        [DbField(true, true)]
         public Nullable<Int32> ID { get; set; }
 
         ///<summary>

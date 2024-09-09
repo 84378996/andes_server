@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 namespace Entity
 {
     ///<summary>
-    /// Record Data Structure
+    /// Alarm Data Structure
     ///</summary>
-    [DbSchema("public","Record")]
-    public class Record
+    [DbSchema("public","Alarm")]
+    public class Alarm
     {
         ///<summary>
-        /// 主键，编号
+        /// 主键
         ///</summary>
-        [DbField(true, true)]
-        public Nullable<Int64> ID { get; set; }
+        [DbField(true,true)]
+        public Nullable<Int32> ID { get; set; }
 
         ///<summary>
-        /// 设备ID
+        /// 设备Id
         ///</summary>
         [DbField]
         public Nullable<Int32> DeviceID { get; set; }
@@ -62,30 +62,10 @@ namespace Entity
         public Nullable<Int16> TheValue { get; set; }
 
         ///<summary>
-        /// 数据录入时间
+        /// 报警时间
         ///</summary>
         [DbField]
-        public Nullable<DateTime> RecordTime { get; set; }
-
-        public string CurrentValue
-        {
-            get
-            {
-                double val = TheValue.GetValueOrDefault();
-                if (JD == 1)
-                    val *= 0.1;
-                else if (JD == 2)
-                    val *= 0.01;
-                else if (JD == 3)
-                    val *= 0.001;
-
-                if (Unit == 1)
-                    return $"{val:F2}(PPM)";
-                else if (Unit == 2)
-                    return $"{val:F2}(%VOL)";
-                return $"{val:F2}(%LEL)";
-            }
-        }
+        public Nullable<DateTime> AlarmTime { get; set; }
 
     }
 }

@@ -15,7 +15,7 @@ namespace Entity
     {
         /// 主键
 		///</summary>
-		[DbField(true)]
+		[DbField(true, true)]
         public Nullable<Int32> ID { get; set; }
 
         ///<summary>
@@ -50,6 +50,19 @@ namespace Entity
         public string AvatarHttp { get; set; }
         public string AvatarName { get; set; }
         public int Enabled { get; set; } = 1;
+
+        public string RoleName
+        {
+            get
+            {
+                if (RoleID == 999)
+                    return "超级管理员";
+                else if (RoleID == 99)
+                    return "管理员";
+                else
+                    return "用户";
+            }
+        }
     }
 
 

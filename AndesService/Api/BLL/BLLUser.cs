@@ -155,22 +155,22 @@ namespace MCSService.Api.BLL
             //    return rsp;
             //}
 
-            
-            //    string pwd = HelperSecurity.SHAEncrypt(req.Data["Pwd"].ToString());
-            //    string pwdmid = HelperSecurity.DecryptPwd(userinfo.LoginName, userinfo.Pwd);
+
+            string pwd = HelperSecurity.SHAEncrypt(req.Data["Pwd"].ToString());
+            string pwdmid = HelperSecurity.DecryptPwd(userinfo.LoginName, userinfo.Password);
 
 
-            //if (pwd != pwdmid)
-            //{
+            if (pwd != pwdmid)
+            {
 
-            //    rsp.Code = ErrorCode.Parameter;
-            //    rsp.Msg = "登录名或密码错误";
-            //    log.Status = (int)LogStatus.Fail;
-            //    log.Remark += "登录名或密码错误";
-            //    _logDal.Add(log);
-            //    return rsp;
+                rsp.Code = ErrorCode.Parameter;
+                rsp.Msg = "登录名或密码错误";
+                log.Status = (int)LogStatus.Fail;
+                log.Remark += "登录名或密码错误";
+                _logDal.Add(log);
+                return rsp;
 
-            //}
+            }
 
 
             DealWithData(userinfo);

@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 
-namespace DB
+namespace AndesDeviceDataService
 {
     /// <summary>
     /// 指示属性为数据库字段

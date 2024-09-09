@@ -30,7 +30,7 @@ namespace MCSService.DAL
                     string devName = pas["DeviceNo"].Value<string>();
                     if (!string.IsNullOrWhiteSpace(devName))
                     {
-                        sbCondition.Append($" AND \"DeviceNo\" LIKE \"%{devName}%\"");
+                        sbCondition.Append($" AND \"DeviceNo\" LIKE '%{devName}%' ");
                     }
                 }
 
@@ -39,7 +39,7 @@ namespace MCSService.DAL
                     string imei = pas["IMEI"].Value<string>();
                     if (!string.IsNullOrWhiteSpace(imei))
                     {
-                        sbCondition.Append($" AND \"IMEI\" LIKE \"{imei}%\"");
+                        sbCondition.Append($" AND \"IMEI\" LIKE '%{imei}%'");
                     }
                 }
 
@@ -48,7 +48,7 @@ namespace MCSService.DAL
                     string begintime = pas["StartTime"].Value<string>();
                     if (DateTime.TryParse(begintime, out _))
                     {
-                        sbCondition.Append($" AND \"CreateTime\" >= \"{begintime}\"");
+                        sbCondition.Append($" AND \"CreateTime\" >= '{begintime}'");
                     }
                 }
                 if (pas.ContainsKey("EndTime"))
@@ -56,7 +56,7 @@ namespace MCSService.DAL
                     string endtime = pas["EndTime"].Value<string>();
                     if (DateTime.TryParse(endtime, out _))
                     {
-                        sbCondition.Append($" AND \"CreateTime\" <= \"{endtime}\"");
+                        sbCondition.Append($" AND \"CreateTime\" <= '{endtime}'");
                     }
                 }
 

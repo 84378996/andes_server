@@ -48,7 +48,7 @@ namespace MCSService.DAL
         public UserInfo Get(JObject param)
         {
             string condition = QuerySql(param, true);
-            var u = EntityHelp.GetObject<UserInfo>($"select * from \"public\".\"User\" where {condition} limit 1");
+            var u = EntityHelp.GetObject<UserInfo>($"select * from \"public\".\"User\" where  1=1  {condition} limit 1");
             if (u.ID > 0) return u;
             return null;
         }
@@ -58,42 +58,28 @@ namespace MCSService.DAL
             StringBuilder sb = new StringBuilder();
 
             if (param.ContainsKey("UserName"))
-                sb.AppendFormat("Name='{0}',", param["UserName"].ToString());
+                sb.AppendFormat("\"Name\"='{0}',", param["UserName"].ToString());
 
             if (param.ContainsKey("Phone"))
-                sb.AppendFormat("[Phone]='{0}',", param["Phone"].ToString());
+                sb.AppendFormat("\"Phone\"='{0}',", param["Phone"].ToString());
 
             if (param.ContainsKey("Email"))
-                sb.AppendFormat("[Email]='{0}',", param["Email"].ToString());
+                sb.AppendFormat("\"Email\"='{0}',", param["Email"].ToString());
 
             if (HelperJObject.IsInt(param, "RoleID"))
-                sb.AppendFormat("[RoleID]={0},", long.Parse(param["RoleID"].ToString()));
+                sb.AppendFormat("\"RoleID\"={0},", long.Parse(param["RoleID"].ToString()));
 
             if (HelperJObject.IsInt(param, "Enabled"))
-                sb.AppendFormat("[Enabled]={0},", int.Parse(param["Enabled"].ToString()));
+                sb.AppendFormat("\"Enabled\"={0},", int.Parse(param["Enabled"].ToString()));
 
-            if (param.ContainsKey("Remark"))
-                sb.AppendFormat("[Remark]='{0}',", param["Remark"].ToString());
-
-            if (param.ContainsKey("Department"))
-                sb.AppendFormat("[Department]='{0}',", param["Department"].ToString());
-
-            if (param.ContainsKey("DevUser"))
-                sb.AppendFormat("[DevUser]='{0}',", param["DevUser"].ToString());
-
-            if (param.ContainsKey("JobNumber"))
-                sb.AppendFormat("[JobNumber]='{0}',", param["JobNumber"].ToString());
 
             if (param.ContainsKey("Pwd"))
-                sb.AppendFormat("[Pwd]='{0}',", param["Pwd"].ToString());
-
-            if (param.ContainsKey("AvatarName"))
-                sb.AppendFormat("[AvatarName]='{0}',", param["AvatarName"].ToString());
+                sb.AppendFormat("\"Password\"='{0}',", param["Pwd"].ToString());
 
             if (string.IsNullOrWhiteSpace(sb.ToString()))
                 throw new Exception("没有需要修改的数据");
 
-            string sql = string.Format("UPDATE  [UserInfo] SET {0} WHERE ID ={1}", sb.ToString().Substring(0, sb.Length - 1), param["ID"].ToString());
+            string sql = string.Format("UPDATE  \"public\".\"User\"  SET {0} WHERE \"ID\" ={1}", sb.ToString().Substring(0, sb.Length - 1), param["ID"].ToString());
 
             return sql;
 
@@ -101,15 +87,7 @@ namespace MCSService.DAL
 
         public void Modify(JObject param)
         {
-            string sql = ModifySql(param);
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
-                SqlCommand cmd = new SqlCommand();
-                cmd.CommandText = sql;
-                cmd.Connection = con;
-                cmd.ExecuteNonQuery();
-            }
+            if (DbHelper.ExecuteNonQuery(ModifySql(param)) != 1) throw new Exception("修改失败");
         }
 
         public void Modify(JArray array)
@@ -122,33 +100,13 @@ namespace MCSService.DAL
                 list.Add(ModifySql(obj));
             }
 
-            using (SqlConnection con = new SqlConnection(DataConnString))
+
+            using (var db = DbHelper.Connection)
             {
-                con.Open();
-
-                SqlTransaction trans = con.BeginTransaction();
-
-                try
+                db.Open();
+                foreach (string sql in list)
                 {
-                    SqlCommand cmd = new SqlCommand();
-                    cmd.Connection = con;
-                    cmd.Transaction = trans;
-                    foreach (string sql in list)
-                    {
-                        cmd.CommandText = sql;
-                        cmd.ExecuteNonQuery();
-                    }
-                    trans.Commit();
-                }
-                catch (Exception ex)
-                {
-                    trans.Rollback();
-                    throw ex;
-                }
-                finally
-                {
-                    trans.Dispose();
-
+                    DbHelper.ExecuteNonQuery(db, sql, null);
                 }
             }
         }
@@ -158,45 +116,31 @@ namespace MCSService.DAL
             string condition;
             if (HelperJObject.IsPositiveLong(param, "ID"))
             {
-                condition = string.Format("\"ID\"={0} ", param["ID"].ToString());
+                condition = string.Format(" AND \"ID\"={0} ", param["ID"].ToString());
                 return condition;
             }
 
             if (matchExact && HelperJObject.IsString(param, "LoginName"))
             {
-                condition = string.Format("\"LoginName\"='{0}' ", param["LoginName"].ToString());
+                condition = string.Format(" AND \"LoginName\"='{0}' ", param["LoginName"].ToString());
                 return condition;
             }
 
 
             StringBuilder sb = new StringBuilder();
             if (HelperJObject.IsLong(param, "RoleID"))
-                sb.AppendFormat("[RoleID]={0} AND ", param["RoleID"].ToString());
+                sb.AppendFormat(" AND \"RoleID\"={0} AND ", param["RoleID"].ToString());
             if (HelperJObject.IsString(param, "LoginName"))
             {
-                if (matchExact)
-                    sb.AppendFormat("[LoginName]='{0}' AND ", param["LoginName"].ToString());
-                else
-                    sb.AppendFormat("[LoginName] like '%{0}%' AND ", param["LoginName"].ToString());
+                sb.AppendFormat(" AND \"LoginName\"='{0}' AND ", param["LoginName"].ToString());
             }
 
             if (HelperJObject.IsString(param, "UserName"))
             {
-                if (matchExact)
-                    sb.AppendFormat("\"Name\"='{0}' AND ", param["UserName"].ToString());
-                else
-                    sb.AppendFormat("\"Name\" like '%{0}%' AND ", param["UserName"].ToString());
+                sb.AppendFormat(" AND \"Name\" like '%{0}%' AND ", param["UserName"].ToString());
             }
 
-            //if (HelperJObject.IsInt(param, "Enabled"))
-            //    sb.AppendFormat("[Enabled]={0} AND ", param["Enabled"].ToString());
-
-            condition = sb.ToString();
-            if (string.IsNullOrWhiteSpace(condition))
-                condition = string.Format(" \"ID\">=0 AND ");
-
-            condition = condition.Substring(0, condition.Length - 4);
-            return condition;
+            return sb.ToString();
         }
 
         public void Gets(JObject param, bool matchExact, out List<UserInfo> users, out int total)
@@ -205,52 +149,27 @@ namespace MCSService.DAL
             users = new List<UserInfo>();
             string condition = QuerySql(param, matchExact);
 
+            string sqlcount = string.Format("SELECT COUNT(\"ID\") FROM \"public\".\"User\" WHERE 1=1 {0}", condition);
 
-            string sqlcount = string.Format("SELECT COUNT(ID) FROM [UserInfo] where {0}", condition);
+            string sql = $"SELECT * FROM \"public\".\"User\" WHERE 1=1  {condition} ORDER BY \"CreateTime\" DESC LIMIT {param["PageSize"]} OFFSET {(int.Parse(param["PageIndex"].ToString()) -1) * int.Parse(param["PageSize"].ToString())}";
 
-            string sql = string.Format("select top {1} * from(select row_number() over(order by [LoginName] asc) as rownumber, * from UserInfo where {2}) temp_row where rownumber > (({0} - 1) * {1})",
-                param["PageIndex"], param["PageSize"], condition);
-
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
-                SqlCommand cmd = new SqlCommand(sqlcount, con);
-                object ret = cmd.ExecuteScalar();
-                if (ret != null)
-                    total = int.Parse(ret.ToString());
-
-                if (total == 0)
-                {
-                    return;
-                }
-
-                users = HelperDBEntity.GetObjectList<UserInfo>(con, sql);
-
-            }
+            total = (int)(long)DbHelper.ExecuteScalar(sqlcount);
+            users = EntityHelp.GetObjectList<UserInfo>(sql);
         }
 
         public void Add(UserInfo data)
         {
-            using (SqlConnection con = new SqlConnection(DataConnString))
+            int count = (int)(long)DbHelper.ExecuteScalar($"SELECT COUNT(*) FROM \"public\".\"User\" WHERE \"LoginName\"='{data.LoginName}'");
+            if (count > 0)
             {
-                con.Open();
-
-                string sql = string.Format("select Top(1) ID  from UserInfo where LoginName='{0}'", data.LoginName);
-                SqlCommand cmd = new SqlCommand(sql, con);
-
-                object ret = cmd.ExecuteScalar();
-                if (ret != null)
-                {
-                    throw new Exception("相同的登录名已存在");
-                }
-
-                HelperDBEntity.InsertEntity(con, data);
-
-
-
+                throw new Exception("相同的用户已存在");
             }
 
-
+            count= EntityHelp.InsertEntity(data);
+            if (count <= 0)
+            {
+                throw new Exception("添加用户失败");
+            }
         }
 
         public void Delete(long? id)
@@ -259,43 +178,26 @@ namespace MCSService.DAL
                 return;
             if (id <= 0)
                 return;
-            using (SqlConnection con = new SqlConnection(DataConnString))
+
+            if (id == 999)
             {
-                con.Open();
-
-                string sql = string.Format("DELETE FROM [UserInfo] WHERE ID={0}", id);
-
-                SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.ExecuteNonQuery();
-
+                throw new Exception("测试用户不可删除");
             }
 
+            UserInfo u = new UserInfo { ID = (int)id.GetValueOrDefault() };
+            if (EntityHelp.DeleteEntity(u) != 1) throw new Exception("删除用户异常");
         }
 
         public void Delete(List<long> list)
         {
-            if (list == null)
-                return;
-            if (list.Count == 0)
-                return;
-
-            StringBuilder sb = new StringBuilder();
-            foreach (long id in list)
+            using (var db = DbHelper.Connection)
             {
-                sb.Append(id.ToString());
-                sb.Append(",");
-            }
-
-
-            using (SqlConnection con = new SqlConnection(DataConnString))
-            {
-                con.Open();
-
-                string sql = string.Format("DELETE FROM [UserInfo] WHERE ID in ({0}0)", sb.ToString());
-
-                SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.ExecuteNonQuery();
-
+                foreach(var id in list)
+                {
+                    if (id == 999) continue;
+                    UserInfo u = new UserInfo { ID = (int)id };
+                    EntityHelp.DeleteEntity(u);
+                }
             }
         }
 

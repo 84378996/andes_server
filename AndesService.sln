@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndesService", "AndesService\AndesService.csproj", "{D703B2EE-2BE9-4865-92E2-2C0BD1C1D8AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity", "Entity\Entity.csproj", "{A75D7821-9E45-495E-A756-D63C7CDD4FB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tool", "Tool\Tool.csproj", "{D6186078-7E98-4BE4-8DD1-6AA0B5CADAC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndesMobileDataService", "AndesMobileDataService\AndesMobileDataService.csproj", "{691B12CA-6A07-4DDA-9250-8D6121D47BF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{D6186078-7E98-4BE4-8DD1-6AA0B5CADAC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6186078-7E98-4BE4-8DD1-6AA0B5CADAC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6186078-7E98-4BE4-8DD1-6AA0B5CADAC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{691B12CA-6A07-4DDA-9250-8D6121D47BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{691B12CA-6A07-4DDA-9250-8D6121D47BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{691B12CA-6A07-4DDA-9250-8D6121D47BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{691B12CA-6A07-4DDA-9250-8D6121D47BF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

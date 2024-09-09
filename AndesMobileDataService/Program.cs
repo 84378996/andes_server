@@ -20,6 +20,7 @@ namespace AndesMobileDataService
         static WaitHandle m_handle = null;
         private static void Main(string[] args)
         {
+            Console.Title = "设备数据转储服务";
             try
             {
                 Common.Init();
@@ -42,9 +43,22 @@ namespace AndesMobileDataService
             m_listener.Close();
         }
 
-        static short ReadInit16(byte[] buf, ref int offset)
+        private static void test()
         {
-            return (short)(((buf[offset++]) << 8) | buf[offset++]);
+            //string str = "01030A0000000100C801F4000095A8";
+            //var buf = HexStringToByteArray(str);
+            //int offset = 3;
+            //int unit = ReadInit16(client.Buf, ref offset);
+            //int jd = ReadInit16(client.Buf, ref offset);
+            //int thresold_min = ReadInit16(client.Buf, ref offset);
+            //int thresold_max = ReadInit16(client.Buf, ref offset);
+            //int val = ReadInit16(client.Buf, ref offset);
+            //Console.WriteLine($"{unit},{jd},{thresold_min},{thresold_max},{val}");
+        }
+
+        static ushort ReadInit16(byte[] buf, ref int offset)
+        {
+            return (ushort)(((buf[offset++]) << 8) | buf[offset++]);
         }
 
         private static void OnTimer(object state)
@@ -133,13 +147,15 @@ namespace AndesMobileDataService
                         string imei = json["sn"].Value<string>();
                         int vol = json["vol"].Value<int>();
 
+                        Console.WriteLine(data);
+
                         var buf = HexStringToByteArray(data);
                         int offset = 3;
-                        short unit = ReadInit16(client.Buf, ref offset);
-                        short jd = ReadInit16(client.Buf, ref offset);
-                        short thresold_min = ReadInit16(client.Buf, ref offset);
-                        short thresold_max = ReadInit16(client.Buf, ref offset);
-                        short val = ReadInit16(client.Buf, ref offset);
+                        int unit = ReadInit16(buf, ref offset);
+                        int jd = ReadInit16(buf, ref offset);
+                        int thresold_min = ReadInit16(buf, ref offset);
+                        int thresold_max = ReadInit16(buf, ref offset);
+                        int val = ReadInit16(buf, ref offset);
                         Console.WriteLine($"{unit},{jd},{thresold_min},{thresold_max},{val}");
 
                         var dev = Common.Devices.FirstOrDefault(d => d.IMEI == imei);
@@ -150,7 +166,7 @@ namespace AndesMobileDataService
                         else
                         {
                             //DbHelper.ExecuteNonQuery($" INSERT INTO \"public\".\"tb_record\" (\"unit\", \"jd\", \"threshold_min\", \"threshold_max\", \"val\", \"rd_time\", \"device_id\", \"device_name\") VALUES ( {unit}, {jd},{thresold_min},{thresold_max},{val}, '{DateTime.Now}', {dev.id}, '{dev.name}');");
-                            Record rd = new Record { Unit = unit, DeviceID = dev.ID, DeviceName = dev.DeviceName, JD = jd, RecordTime = DateTime.Now, TheValue = val, ThresholdMax = thresold_max, ThresholdMin = thresold_min };
+                            Record rd = new Record { Unit = (short)unit, DeviceID = dev.ID, DeviceName = dev.DeviceName, JD = (short)jd, RecordTime = DateTime.Now, TheValue = (short)val, ThresholdMax = (short)thresold_max, ThresholdMin = (short)thresold_min };
                             EntityHelp.InsertEntity(rd);
 
                             dev.JD = (short)jd;
